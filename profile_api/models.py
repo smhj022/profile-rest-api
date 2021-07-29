@@ -17,7 +17,7 @@ class UserProfileManager(BaseUserManager):
         user = self.model(email=email, name=name)
 
         # with set_password django will save password as a hash password
-        user.set_passward(password)
+        user.set_password(password)
 
         # standard procedure for saving the objects
         user.save(using=self._db)
