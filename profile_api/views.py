@@ -2,7 +2,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import viewsets
-from .serializers import HelloSerializer
+from rest_framework.authentication import TokenAuthentication
+
+
+from .serializers import HelloSerializer, UserProfileSerializer
+from .models import UserProfile
+from .permission import UpdateOwnProfile
 
 # Create your views here.
 
@@ -94,3 +99,15 @@ class HelloViewSet(viewsets.ViewSet):
     def destroy(self, request, pk=None):
         """Handle delete an object"""
         return Response({"Http_method": "DELETE"})
+
+
+class UserProfileViewSet(viewsets.ModelViewSet):
+    serializer_class = UserProfileSerializer
+    queryset = UserProfile.objects.all()
+
+    # check for user authentication
+    authentication_classes = (TokenAuthentication,)
+
+    # list out the permission for the authentication user
+    permission_classes = (UpdateOwnProfile,)
+
