@@ -2,6 +2,8 @@ from rest_framework import filters, status, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.settings import api_settings
 
 from .models import UserProfile
 from .permission import UpdateOwnProfile
@@ -112,3 +114,13 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     # filter functionality now user can search other user with name and email
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name', 'email')
+
+
+
+class UserLoginApiView(ObtainAuthToken):
+    """Handle creating user authentication token"""
+    # it obtain auth token view , which will enable it in the django admin/
+    # the rest of the view sets sand other things provided by the django
+    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+
+
