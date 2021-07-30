@@ -1,13 +1,11 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework import viewsets
+from rest_framework import filters, status, viewsets
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-
-from .serializers import HelloSerializer, UserProfileSerializer
 from .models import UserProfile
 from .permission import UpdateOwnProfile
+from .serializers import HelloSerializer, UserProfileSerializer
 
 # Create your views here.
 
@@ -111,3 +109,6 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     # list out the permission for the authentication user
     permission_classes = (UpdateOwnProfile,)
 
+    # filter functionality now user can search other user with name and email
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name', 'email')
