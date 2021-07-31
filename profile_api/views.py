@@ -1,13 +1,15 @@
 from rest_framework import filters, status, viewsets
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.response import Response
 from rest_framework.settings import api_settings
+from rest_framework.views import APIView
 
-from .models import UserProfile
-from .permission import UpdateOwnProfile
-from .serializers import HelloSerializer, UserProfileSerializer
+from .models import ProfileFeedItem, UserProfile
+from .permission import UpdateOwnProfile, UpdateOwnStatus
+from .serializers import (HelloSerializer, UserProfileFeedSerializer,
+                          UserProfileSerializer)
 
 # Create your views here.
 
@@ -116,7 +118,6 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     search_fields = ('name', 'email')
 
 
-
 class UserLoginApiView(ObtainAuthToken):
     """Handle creating user authentication token"""
     # it obtain auth token view , which will enable it in the django admin/
@@ -124,3 +125,27 @@ class UserLoginApiView(ObtainAuthToken):
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
 
 
+class UserProfileFeedApiViewSet(viewsets.ModelViewSet):
+    """Handles Creating Updating and Reading Profile Feed Item"""
+
+    serializer_class = UserProfileFeedSerializer
+    queryset = ProfileFeedItem.objects.all()
+
+    # check for user authentication
+    authentication_classes = (TokenAuthentication,)
+
+    # list out the permission for the authentication user
+    permission_classes = (
+        UpdateOwnStatus,
+        IsAuthenticatedOrReadOnly,
+    )
+
+    # perform create function override the create function
+    # When a request is made to over viewset then it passed over the serializer
+    # class and validate then serializer.save function is called by default
+    # if we want to customize the logic for creating an object then it can be done
+    # by perform create function
+
+    def perform_create(self, serializer):
+        """Sets the user profile to logged in profile"""
+        serializer.save(user_profile=self.request.user)

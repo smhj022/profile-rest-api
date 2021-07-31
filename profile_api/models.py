@@ -1,4 +1,6 @@
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.conf import settings
+from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
+                                        PermissionsMixin)
 from django.db import models
 
 # Create your models here.
@@ -62,3 +64,20 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     def __str__(self) -> str:
         """return string representation of our user"""
         return self.email
+
+
+class ProfileFeedItem(models.Model):
+    """Profile status update"""
+
+    # In place of settings.AUTH_USER_MODEL we can use UserProfile 
+    # we are doing this because if we change the model 
+    # we do not need to change name dynamically
+    user_profile = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+    status_text = models.CharField(max_length=255)
+    posted_on = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return self.status_text

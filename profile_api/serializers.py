@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import UserProfile
+from .models import UserProfile, ProfileFeedItem
 
 # serializer is a feature from django from a rest framework that allows you to/
 # easily convert data inputs into python objects and vice versa.
@@ -46,3 +46,14 @@ class UserProfileSerializer(serializers.ModelSerializer):
             instance.set_password(password)
 
         return super().update(instance, validated_data)
+
+
+class UserProfileFeedSerializer(serializers.ModelSerializer):
+    """Serialize Profile Feed Item"""
+
+    class Meta:
+        model = ProfileFeedItem
+        fields = ["id", "user_profile", "status_text", "posted_on"]
+        extra_kwargs = {
+            "user_profile": {'read_only': True}
+        }
